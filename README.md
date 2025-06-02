@@ -82,7 +82,7 @@ This network connects foods based on the similarity of their normalized nutritio
 
 ### 3. Nutrient-Nutrient Correlation Network Analysis
 
-<img width="593" alt="nutrient (1)" src="https://github.com/user-attachments/assets/5e49ac42-4e67-495e-b8d2-5ed1a2d02f32" />
+![Screenshot 2025-06-02 143540](https://github.com/user-attachments/assets/ed6a9150-a898-4ffd-8fee-2b5e4ebafaf5)
 
 This network explores relationships between nutrients based on co-occurrence patterns.
 *   **Network Construction:** Built using Spearman correlation coefficients (thresholded).
