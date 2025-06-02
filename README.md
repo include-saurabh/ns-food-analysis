@@ -1,69 +1,135 @@
-# ns-food-analysis
+# Network Analysis of Food and Nutrition Data
 
-1.  **Data Acquisition & Initial Exploration:**
-    *   Load the dataset (8789 food items).
-    *   Perform basic EDA: check data types, distributions of key nutrients (calories, protein, fat, carbs, key vitamins/minerals), identify missing values, understand units.
+This project uses network science methodologies to analyze a dataset of 8,789 food items, each detailed with macronutrients, micronutrients, and calories. The goal is to uncover hidden patterns, identify key nutritional players, and provide a framework for data-driven dietary insights.
 
-2.  **Data Preprocessing & Cleaning:**
-    *   **Handle Missing Values:** Decide on a strategy (e.g., imputation using mean/median/zero, or dropping columns/rows if missingness is too high). *Crucial step.*
-    *   **Unit Standardization:** Convert all nutrient values to a consistent unit where meaningful (e.g., mg for minerals/vitamins, g for macros). Pay attention to IU conversions if possible/necessary.
-    *   **Normalization/Scaling:** Since nutrient quantities vary vastly (g vs mcg), normalize data before certain analyses (e.g., correlation, similarity calculations, GNN input). Options: Min-Max scaling, Z-score standardization, or perhaps normalization based on RDAs if available.
-    *   **Feature Selection:** Decide which nutrients/columns to include in the network analysis. Include macros, key micros, amino acids. Exclude purely descriptive columns unless needed (e.g., serving size if always 100g).
-    *   **(Optional) Food Categorization:** Add a column for pre-defined food groups if available or derive basic ones from names (e.g., 'Nuts', 'Fruit', 'Vegetable', 'Meat').
+## Project Overview
 
-3.  **Network Construction:**
-    *   **a) Food-Nutrient Bipartite Graph:**
-        *   Nodes: Foods (Set F), Nutrients (Set N).
-        *   Edges: Connect food `f` to nutrient `n` if `f` contains `n`.
-        *   Edge Weights:
-            *   Option 1: Raw quantity (standardized/normalized).
-            *   Option 2: Nutrient density (quantity / calories).
-            *   Option 3: Binary (presence/absence above a threshold).
-            *   *Choose and justify your weighting scheme.*
-    *   **b) Nutrient Co-occurrence/Correlation Network:**
-        *   Nodes: Nutrients.
-        *   Edges: Connect nutrient `n1` to `n2` if they frequently co-occur across foods.
-        *   Edge Weights: Calculate correlation (e.g., Pearson, Spearman) between nutrient vectors across all foods. Use absolute correlation value or thresholded value.
-    *   **c) Food Similarity Network:**
-        *   Nodes: Foods.
-        *   Edges: Connect food `f1` to `f2` if their nutritional profiles are similar.
-        *   Edge Weights: Calculate similarity (e.g., Cosine similarity, Euclidean distance inverted) between food nutrient vectors (use normalized data).
-    *   **(Advanced) d) Nutrient Synergy/Antagonism Network:** (Requires external data lookup).
-    *   **(Advanced) e) Food Complementarity Network:** (Requires defining completeness score & complementarity metric).
+Understanding the complex relationship between food items and their nutritional content is crucial for public health, dietary planning, and food science. This project leverages network science to transform a large food dataset into interconnected structures, offering a novel perspective on food relationships.
 
-4.  **Fundamental Network Analysis & Visualization:**
-    *   **Compute Basic Metrics:** For relevant networks (especially Food-Nutrient projected graphs or Nutrient-Nutrient/Food-Food):
-        *   Degree Centrality (identify well-connected foods/nutrients).
-        *   Betweenness Centrality (identify bridge foods/nutrients).
-        *   Closeness Centrality (identify foods/nutrients quickly accessible).
-        *   PageRank/Eigenvector Centrality (identify influential foods/nutrients).
-    *   **Clustering Coefficient:** Measure local cohesiveness (do nutrients found in one food tend to be correlated? Do similar foods share neighbours?).
-    *   **Visualization:** Use Gephi or Python libraries (NetworkX with Matplotlib/Seaborn, PyVis, Plotly) to visualize the networks. Use node size/color based on centrality or food category. Use edge thickness/color based on weights.
+I constructed and analyzed three types of networks:
+1.  A **Food-Nutrient Bipartite Graph** to understand nutrient distribution across foods.
+2.  A **Nutrient-Nutrient Correlation Network** to identify relationships between nutrients.
+3.  A **Food-Food k-Nearest Neighbors (k-NN) Similarity Graph** to cluster foods based on nutritional profiles.
 
-5.  **Community Detection & Structure Analysis:**
-    *   Apply algorithms (e.g., Louvain Modularity, Girvan-Newman) to:
-        *   Food-Nutrient Bipartite Graph (communities might represent dietary patterns or functional groups).
-        *   Nutrient-Nutrient Network (identify clusters of related nutrients, e.g., B vitamins, electrolytes, fat-soluble vitamins).
-        *   Food-Food Network (identify clusters of nutritionally similar foods, compare with standard food groups).
-    *   Calculate Modularity score to assess the quality of detected communities.
+Key analyses include community detection to identify nutritional categories, centrality measures to pinpoint archetypal and bridge foods, and structural component analysis. The findings reveal distinct nutritional groupings and influential food profiles.
 
-6.  **Advanced Network Analysis & Interpretation:**
-    *   **Hub Analysis:** Deep dive into the top central nodes identified in step 4. What makes "nuts" or "liver" or "Vitamin C" hubs in different network contexts?
-    *   **Nutritional Gap Analysis:** Identify foods with very low degree or specific nutrient deficiencies based on network position. Analyze isolated nodes/components.
-    *   **Complementarity Analysis:** Use the Food Complementarity Network (if built) or analyze anti-communities (groups of nodes with few internal links but many external ones) in the Food Similarity Network.
-    *   **Robustness Simulation:** Perform node removal simulations (step 7 in ideas) to test dietary resilience.
+A basic web-based user interface was also developed using Streamlit to explore food similarities and complementary food pairings.
 
-7.  **(Optional) Graph Embeddings & GNN Implementation:**
-    *   **Generate Embeddings:** Apply Node2Vec/DeepWalk/GraphSAGE to the Food-Nutrient bipartite graph.
-    *   **Visualize Embeddings:** Use t-SNE/UMAP to visualize food/nutrient relationships in 2D. Check if known food groups cluster together.
-    *   **Implement GNN Task(s):**
-        *   Set up and train a GNN for Link Prediction (nutrient quantity estimation). Evaluate accuracy.
-        *   Set up and train a GNN for Node Classification (food category prediction). Evaluate accuracy (e.g., F1-score, compare to standard groups).
+## Methodology
 
-8.  **Synthesis, Evaluation & Reporting:**
-    *   Synthesize findings from all analyses. Do results from different network types reinforce each other?
-    *   Evaluate how well the network models addressed the project objectives.
-    *   Relate findings back to nutritional science and dietary recommendations. What are the practical implications?
-    *   Document the methodology, results (including key visualizations), and conclusions clearly.
+### 1. Data Acquisition and Preprocessing
+The dataset comprises 8,789 food items with detailed nutritional information (calories, macronutrients, micronutrients).
+Preprocessing steps:
+*   **Cleaning:** Handling missing values (imputation with zero), removing units, converting to numeric format.
+*   **Standardization:** Converting nutrient values to common units (e.g., micrograms to milligrams).
+*   **Normalization (Z-score):** Using `StandardScaler` from scikit-learn to normalize nutrient data, ensuring equal contribution to similarity measures.
 
-Remember to start with the core tasks from your synopsis and gradually add complexity. The GNN parts are more advanced and might depend on your computational resources and time. Good luck!
+### 2. Network Construction
+
+*   **Food-Nutrient Bipartite Graph:**
+    *   **Nodes:** Two sets: (1) Food items, (2) Nutrients.
+    *   **Edges:** Connects a food to a nutrient if the food contains it.
+    *   **Weights:** Normalized quantity (Z-score) of the nutrient in that food.
+    *   **Tool:** Gephi for visualization of sampled versions.
+
+*   **Nutrient-Nutrient Correlation Network:**
+    *   **Nodes:** Nutrients.
+    *   **Edges:** Connects two nutrients if their presence and quantities are correlated across foods.
+    *   **Weights:** Spearman correlation coefficient (thresholded at `|correlation| > 0.4`).
+    *   **Tool:** Python (pandas for correlation), Gephi for visualization.
+
+*   **Food-Food k-Nearest Neighbors (k-NN) Similarity Graph:**
+    *   **Nodes:** Food items.
+    *   **Edges:** Directed edge from food A to food B if B is one of the top 'k' (k=10) most nutritionally similar foods to A.
+    *   **Similarity Metric:** Cosine similarity on Z-score normalized nutrient profiles.
+    *   **Weights:** Cosine similarity score.
+    *   **Tool:** Python (scikit-learn for similarity, NetworkX for graph construction), Gephi for analysis and visualization.
+
+### 3. Network Analysis Techniques
+Standard network science metrics and algorithms were applied using Gephi and NetworkX:
+*   **Centrality Measures:** In-Degree, PageRank, Betweenness Centrality.
+*   **Community Detection:** Modularity (Louvain algorithm).
+*   **Connected Components Analysis.**
+*   **Layout Algorithms:** ForceAtlas2 for visualization.
+
+## Key Findings & Analyses
+
+### 1. Food-Nutrient Bipartite Graph Analysis
+
+![bipartite](https://github.com/user-attachments/assets/98f1b077-6c31-44b3-a8c4-493b85396023)
+
+*   **Nutrient Node Degree (Prevalence):**
+    *   *Highest Degree (Most Prevalent):* Calories, Water, Sodium, Protein, Fat, Ash, Iron, Potassium, Calcium – fundamental components found across most foods.
+    *   *Lowest Degree (Specialized):* Alcohol, Vitamin B12, Galactose, Theobromine, Caffeine – found in specific food categories.
+*   **Food Node Degree (Nutritional Diversity):**
+    *   *Highest Degree (Most Diverse):* Complex, multi-ingredient prepared foods (e.g., Chicken pot pie, fast food wraps/pizza).
+    *   *Lowest Degree (Least Diverse):* Simple items (e.g., Bottled waters, Stevia extract).
+*   **Insights:** Effectively differentiates core, ubiquitous nutrients from specialized ones and highlights the nutritional diversity spectrum of foods.
+
+### 2. Food-Food k-NN Similarity Network Analysis
+
+![food](https://github.com/user-attachments/assets/af58fdcd-81a8-4ec9-92fc-dbc1d584c2ea)
+
+![food1](https://github.com/user-attachments/assets/ab2683d4-09e1-431b-b006-3916cf075851)
+
+This network connects foods based on the similarity of their normalized nutritional profiles (k=10).
+*   **Community Detection:** Revealed clusters of foods with similar nutritional profiles, forming data-driven nutritional categories (e.g., "Leafy Greens & Low-Calorie Vegetables," "Nuts & Seeds," "Red Meats").
+*   **Centrality Analysis:**
+    *   *In-Degree Centrality:* Identified "archetypal" or "reference" foods within nutritional niches (e.g., 'spinach' in a green vegetable cluster).
+    *   *PageRank Centrality:* Reinforced In-Degree findings, highlighting influential food profiles.
+    *   *Betweenness Centrality:* Identified "nutritional bridges" – foods with mixed profiles (e.g., some fast foods, cakes) connecting diverse food groups.
+*   **Insights:** The k-NN graph reveals natural food clustering, key archetypal foods, and bridge foods, supporting the food similarity feature in the UI.
+
+### 3. Nutrient-Nutrient Correlation Network Analysis
+
+<img width="593" alt="nutrient (1)" src="https://github.com/user-attachments/assets/5e49ac42-4e67-495e-b8d2-5ed1a2d02f32" />
+
+This network explores relationships between nutrients based on co-occurrence patterns.
+*   **Network Construction:** Built using Spearman correlation coefficients (thresholded).
+*   **Community Detection:** Revealed clusters of nutrients that tend to vary together, such as:
+    *   Macronutrients and their components (Protein with Amino Acids; Fat with Fatty Acids).
+    *   Fat-soluble vitamins (A, D, E, K) with fats.
+    *   B-vitamins.
+    *   Electrolytes.
+*   **Centrality Analysis:**
+    *   *Degree Centrality:* Identified highly connected nutrients like protein, fat, water, potassium.
+    *   *Betweenness Centrality:* Nutrients like 'Protein' bridge different clusters (e.g., amino acid clusters).
+*   **Insights:** Confirmed known biochemical relationships and highlighted co-occurrence patterns, distinguishing core nutrients from specialized ones and showing separation between fat-centric and carb-centric clusters.
+
+## Web User Interface
+
+A web application was developed using Streamlit for interactive exploration of food similarities and complementary food pairings.
+
+### Features:
+1.  **Food Similarity Exploration:**
+    *   Users select a food item.
+    *   The system displays the top N most nutritionally similar foods (from the k-NN graph).
+    *   Provides a local network visualization and side-by-side nutritional profile comparison.
+
+![web1](https://github.com/user-attachments/assets/c9c6be47-847b-4041-bfd0-23fbae98880a)
+
+![web2](https://github.com/user-attachments/assets/ddfebc57-be42-41a9-ace3-137614a35afb)
+
+2.  **Complementary Food Recommendation:**
+    *   **Single Food Mode:** Identifies nutrients a selected food is low in (based on Z-scores) and suggests other foods high in those lacking nutrients (using the Food-Nutrient Bipartite Graph).
+    *   **Multi-Food Group Mode:** Calculates the average nutritional profile of a selected group, identifies collective low-scoring nutrients, and suggests complementary foods.
+  
+![web3](https://github.com/user-attachments/assets/40e36d42-0fa1-428e-a621-f42f4fd4a8fa)
+
+### Insights from UI:
+The UI translates complex network analysis into actionable insights, facilitating healthier food choices and exploration of nutritional relationships.
+
+## Technologies Used
+
+*   Python
+*   Pandas (Data manipulation)
+*   Scikit-learn (Normalization, Cosine Similarity)
+*   NetworkX (Graph construction and analysis)
+*   Gephi (Network visualization and analysis)
+*   Streamlit (Web application development)
+
+## Conclusion
+
+This project demonstrates the significant potential of network science in unraveling complex relationships within food and nutrition data. I successfully constructed multiple network representations, identified key structural features, and developed an interactive tool.
+
+This data-driven understanding of the food landscape can empower individuals in making informed dietary choices and aid researchers in public health and food science.
