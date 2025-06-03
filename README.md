@@ -128,6 +128,11 @@ The UI translates complex network analysis into actionable insights, facilitatin
 *   Gephi (Network visualization and analysis)
 *   Streamlit (Web application development)
 
+## Dataset
+
+Nutritional values for common foods and products
+*   https://www.kaggle.com/datasets/trolukovich/nutritional-values-for-common-foods-and-products
+
 ## Conclusion
 
 This project demonstrates the significant potential of network science in unraveling complex relationships within food and nutrition data. I successfully constructed multiple network representations, identified key structural features, and developed an interactive tool.
